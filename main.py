@@ -20,6 +20,7 @@ class InputURLWindow(QMainWindow):
         self.btnSubmit = QPushButton('Submit')
 
         layout.addWidget(QLabel("Url: "))
+        self.txtUrl.setText("https://thin-skinned-passes.000webhostapp.com/login.php")
         layout.addWidget(self.txtUrl)
         layout.addWidget(QLabel("\n"))
         layout.addWidget(self.btnSubmit)

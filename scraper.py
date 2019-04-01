@@ -49,8 +49,6 @@ listofinputed= []
 
 def processform(formdata):
     choose = 0
-    
-    
 
     while choose != -1:
         # os.system("cls")
