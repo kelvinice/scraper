@@ -1,17 +1,18 @@
 import sys
 from PyQt5.QtWidgets import *
+
 import main
 from functools import partial
 import input_manager
 
 class form_manager(QMainWindow):
     def on_click(self,args=0):
-        dialog = input_manager.input_manager(result=self.forms[int(args)], parent=self)
+        dialog = input_manager.input_manager(url = self.url,result=self.forms[int(args)], parent=self)
         dialog.show()
 
-    def __init__(self,result, parent=None):
+    def __init__(self,url,result, parent=None):
         super(form_manager,self).__init__(parent)
-
+        self.url = url
         self.tblForm = QTableWidget()
 
         from scraper import getheader, findallform
@@ -24,12 +25,13 @@ class form_manager(QMainWindow):
         header = ("Method", "Action", "Button")
         self.tblForm.setHorizontalHeaderLabels(header)
 
-
         self.rowcount = 0
         for f in self.forms:
 
             header = getheader(f)
-            self.tblForm.setItem(self.rowcount, 0, QTableWidgetItem(header["method"]))
+            methoditem = QTableWidgetItem(header["method"])
+
+            self.tblForm.setItem(self.rowcount, 0, methoditem)
             self.tblForm.setItem(self.rowcount, 1, QTableWidgetItem(header["action"]))
             button = QPushButton("input",self)
             curr = self.rowcount

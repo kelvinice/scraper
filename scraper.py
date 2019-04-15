@@ -14,6 +14,7 @@ url2 = 'https://thin-skinned-passes.000webhostapp.com'
 url = 'http://industry.socs.binus.ac.id/learning-plan/auth/login'
 url2 = 'http://industry.socs.binus.ac.id/learning-plan/'
 session = requests.Session()
+browser = None
 
 def scrape(url):
     req = session.get(url)
@@ -31,6 +32,14 @@ def findallinput(htmldata):
     inputs = htmldata.find_all('input')
     return inputs
 
+def findallbutton(htmldata):
+    inputs = htmldata.find_all('button')
+    return inputs
+
+def innerHTML(element):
+    """Returns the inner HTML of an element as a UTF-8 encoded bytestring"""
+    return element.encode_contents()
+
 def getheader(htmldata):
     header = {}
     header["id"] = "None"
@@ -43,9 +52,34 @@ def getheader(htmldata):
     header["type"] = htmldata.get("type")
     header["value"] = htmldata.get("value")
     header["name"] = htmldata.get("name")
+    header["innerHTML"] = htmldata.text
     return header
 
 listofinputed= []
+
+def getInputed(inputs,choose):
+
+    listofinputed.append({"id": getheader(inputs[choose])["id"], "class": getheader(inputs[choose])["class"],
+                          "name": getheader(inputs[choose])["name"], "value": value})
+    inputs[choose]['value'] = value
+
+def get_browser():
+    return browser
+
+def dive(url,listofinputed):
+    browsers = get_browser()
+    if browsers==None:
+        browsers = webdriver.Firefox()
+    browsers.get(url)
+    for inputed in listofinputed:
+
+        if inputed["id"] != None:
+            input_inputed = browsers.find_element_by_id(inputed["id"])
+        else:
+            # classname = ".".join(getheader(inputed)["class"])
+            input_inputed = browsers.find_element_by_name(inputed["name"])
+        input_inputed.send_keys(inputed["value"])
+    return browsers
 
 def processform(formdata):
     choose = 0
@@ -111,6 +145,14 @@ def processform(formdata):
                 inputs[choose]['value'] = value
 
 
+
+def set_cookies(browser,cookies):
+    cookies = browser.get_cookies()
+
+    for cookie in cookies:
+        print(cookie['name'], " : ", cookie['value'])
+        session.cookies.set(cookie['name'], cookie['value'])
+    return cookies
 
 def main():
     choose = 0

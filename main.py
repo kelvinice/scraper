@@ -4,11 +4,11 @@ import form_manager
 
 class InputURLWindow(QMainWindow):
     def on_click(self):
-        from scraper import scrape
+        import scraper
         text = self.txtUrl.text()
-        result = scrape(text)
+        result = scraper.scrape(text)
 
-        dialog = form_manager.form_manager(result=result, parent=self)
+        dialog = form_manager.form_manager(url=text,result=result, parent=self)
         dialog.show()
 
 
@@ -20,7 +20,7 @@ class InputURLWindow(QMainWindow):
         self.btnSubmit = QPushButton('Submit')
 
         layout.addWidget(QLabel("Url: "))
-        self.txtUrl.setText("https://thin-skinned-passes.000webhostapp.com/login.php")
+        self.txtUrl.setText("https://industry.socs.binus.ac.id/learning-plan/auth/login")
         layout.addWidget(self.txtUrl)
         layout.addWidget(QLabel("\n"))
         layout.addWidget(self.btnSubmit)
