@@ -28,12 +28,17 @@ class input_manager(QMainWindow):
             scraper.browser = scraper.dive(self.url, self.listofinputed)
 
             if scraper.getheader(self.inputs[args])["id"] != None:
-                # print("using id")
+                print("using id")
                 submit = scraper.browser.find_element_by_id(self.inputs[args]["id"])
             elif scraper.getheader(self.inputs[args])["class"] != None:
                 classname = ".".join(scraper.getheader(self.inputs[args])["class"])
-                # print("using css",classname)
-                submit = scraper.browser.find_element_by_css_selector('input.' + classname)
+                print("using css",classname)
+                if self.inputs[args].name == "input":
+                    print("pake input")
+                    submit = scraper.browser.find_element_by_css_selector('input.' + classname)
+                else:
+                    print("pake button")
+                    submit = scraper.browser.find_element_by_css_selector('button.' + classname)
 
             submit.click()
             wait = WebDriverWait(scraper.browser, 5)
@@ -52,8 +57,7 @@ class input_manager(QMainWindow):
                 self.browser_shower.setText(str(loginResult))
                 soup = BeautifulSoup(loginResult, features='html.parser')
 
-                # print(soup.find_all('div',{"id": "core-content"}))
-                print(soup.find_all('div', {"class": "ui success message"}))
+
             except TimeoutException:
                 print("Timeout")
 
@@ -68,23 +72,29 @@ class input_manager(QMainWindow):
         self.inputs = result
         self.tblForm = QTableWidget()
 
-        from scraper import getheader, findallinput,findallbutton
+        from scraper import getheader, findallinput,findallbutton,findalltextarea
 
-        self.inputs = findallinput(result)
-        self.buttons = findallbutton(result)
-        self.tblForm.setRowCount(len(self.inputs)+len(self.buttons))
+        self.inputs = findallinput(result)+findallbutton(result)+findalltextarea(result)
+        # self.buttons = findallbutton(result)
 
-        self.tblForm.setColumnCount(5)
 
-        header = ("Type", "Id", "Name", "Value", "Button")
+        self.tblForm.setRowCount(len(self.inputs))
+
+        self.tblForm.setColumnCount(6)
+
+        header = ("Type", "Id", "Name", "Value", "Button","Inner")
         self.tblForm.setHorizontalHeaderLabels(header)
 
         self.rowcount = 0
         for inp in self.inputs:
             header = getheader(inp)
-            itemtype = QTableWidgetItem(header["type"])
+            if header["innerHTML"]!= None and header["innerHTML"].lower()=="submit":
+                itemtype = QTableWidgetItem(header["innerHTML"])
+            else:
+                itemtype = QTableWidgetItem(header["type"])
             itemid = QTableWidgetItem(header["id"])
             itemname = QTableWidgetItem(header["name"])
+            iteminner = QTableWidgetItem(header["innerHTML"])
 
             itemtype.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
             itemid.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
@@ -94,6 +104,7 @@ class input_manager(QMainWindow):
             self.tblForm.setItem(self.rowcount, 1, itemid)
             self.tblForm.setItem(self.rowcount, 2, itemname)
             self.tblForm.setItem(self.rowcount, 3, QTableWidgetItem(header["value"]))
+            self.tblForm.setItem(self.rowcount, 4, iteminner)
             input_button = QPushButton("input")
             input_button.clicked.connect(partial(self.on_click, self.rowcount))
             self.tblForm.setCellWidget(self.rowcount, 4, input_button)
@@ -102,26 +113,26 @@ class input_manager(QMainWindow):
 
 
 
-        for inp in self.buttons:
-            header = getheader(inp)
-
-            itemtype = QTableWidgetItem(header["innerHTML"])
-            itemid = QTableWidgetItem(header["id"])
-            itemname = QTableWidgetItem(header["name"])
-
-            itemtype.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
-            itemid.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
-            itemname.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
-
-            self.tblForm.setItem(self.rowcount, 0, itemtype)
-            self.tblForm.setItem(self.rowcount, 1, itemid)
-            self.tblForm.setItem(self.rowcount, 2, itemname)
-            self.tblForm.setItem(self.rowcount, 3, QTableWidgetItem(header["value"]))
-            input_button = QPushButton("input")
-            input_button.clicked.connect(partial(self.on_click, self.rowcount))
-            self.tblForm.setCellWidget(self.rowcount, 4, input_button)
-
-            self.rowcount += 1
+        # for inp in self.buttons:
+        #     header = getheader(inp)
+        #
+        #     itemtype = QTableWidgetItem(header["innerHTML"])
+        #     itemid = QTableWidgetItem(header["id"])
+        #     itemname = QTableWidgetItem(header["name"])
+        #
+        #     itemtype.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
+        #     itemid.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
+        #     itemname.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
+        #
+        #     self.tblForm.setItem(self.rowcount, 0, itemtype)
+        #     self.tblForm.setItem(self.rowcount, 1, itemid)
+        #     self.tblForm.setItem(self.rowcount, 2, itemname)
+        #     self.tblForm.setItem(self.rowcount, 3, QTableWidgetItem(header["value"]))
+        #     input_button = QPushButton("input")
+        #     input_button.clicked.connect(partial(self.on_click, self.rowcount))
+        #     self.tblForm.setCellWidget(self.rowcount, 4, input_button)
+        #
+        #     self.rowcount += 1
 
         self.tblForm.cellChanged.connect(self.cellChanged)
         layout = QVBoxLayout()

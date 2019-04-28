@@ -36,6 +36,11 @@ def findallbutton(htmldata):
     inputs = htmldata.find_all('button')
     return inputs
 
+def findalltextarea(htmldata):
+    inputs = htmldata.find_all('textarea')
+    return inputs
+
+
 def innerHTML(element):
     """Returns the inner HTML of an element as a UTF-8 encoded bytestring"""
     return element.encode_contents()
