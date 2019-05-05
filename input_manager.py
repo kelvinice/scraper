@@ -18,52 +18,48 @@ class input_manager(QMainWindow):
             import scraper
             text = str(self.tblForm.item(row,col).text())
             self.listofinputed.append(
-                {"id": scraper.getheader(self.inputs[row])["id"], "class": scraper.getheader(self.inputs[row])["class"],
+                {"tag": scraper.getheader(self.inputs[row])["tag"], "id": scraper.getheader(self.inputs[row])["id"], "class": scraper.getheader(self.inputs[row])["class"],
                  "name": scraper.getheader(self.inputs[row])["name"], "value": text})
 
 
     def on_click(self,args=0):
-        if(str(self.tblForm.item(args,0).text()).lower()=="submit"):
-            import scraper
-            scraper.browser = scraper.dive(self.url, self.listofinputed)
+        # TODO VALIDASI JIKA BUTTON
+        import scraper
+        self.listofinputed.append(
+            {"tag": scraper.getheader(self.inputs[args])["tag"],"id": scraper.getheader(self.inputs[args])["id"], "class": scraper.getheader(self.inputs[args])["class"],
+             "name": scraper.getheader(self.inputs[args])["name"], "value": "{button.click}"})
+        # print(self.listofinputed)
+        # if(str(self.tblForm.item(args,0).text()).lower()=="submit"):
+        #     import scraper
+        #     scraper.browser = scraper.dive(self.url, self.listofinputed)
 
-            if scraper.getheader(self.inputs[args])["id"] != None:
-                print("using id")
-                submit = scraper.browser.find_element_by_id(self.inputs[args]["id"])
-            elif scraper.getheader(self.inputs[args])["class"] != None:
-                classname = ".".join(scraper.getheader(self.inputs[args])["class"])
-                print("using css",classname)
-                if self.inputs[args].name == "input":
-                    print("pake input")
-                    submit = scraper.browser.find_element_by_css_selector('input.' + classname)
-                else:
-                    print("pake button")
-                    submit = scraper.browser.find_element_by_css_selector('button.' + classname)
+        # else:
+        #     pass
 
-            submit.click()
-            wait = WebDriverWait(scraper.browser, 5)
-            try:
-                page_loaded = wait.until_not(
-                    lambda browser: browser.current_url == self.url
-                )
-                print("Page is ready!")
-                cookies = scraper.browser.get_cookies()
+    def executeAllClick(self):
+        print("executed")
+        import scraper
+        scraper.browser = scraper.dive_plus(self.url, self.listofinputed)
+        wait = WebDriverWait(scraper.browser, 5)
+        try:
+            page_loaded = wait.until_not(
+                lambda browser: browser.current_url == self.url
+            )
+            print("Page is ready!")
+            cookies = scraper.browser.get_cookies()
 
-                for cookie in cookies:
-                    print(cookie['name'], " : ", cookie['value'])
-                    scraper.session.cookies.set(cookie['name'], cookie['value'])
-                url2 = "https://industry.socs.binus.ac.id/learning-plan/"
-                loginResult = scraper.scrape(url2)
-                self.browser_shower.setText(str(loginResult))
-                soup = BeautifulSoup(loginResult, features='html.parser')
+            for cookie in cookies:
+                print(cookie['name'], " : ", cookie['value'])
+                scraper.session.cookies.set(cookie['name'], cookie['value'])
+            url2 = "https://industry.socs.binus.ac.id/learning-plan/"
+            loginResult = scraper.scrape(url2)
+            self.browser_shower.setText(str(loginResult))
+            soup = BeautifulSoup(loginResult, features='html.parser')
 
-
-            except TimeoutException:
-                print("Timeout")
+        except TimeoutException:
+            print("Timeout")
 
 
-        else:
-            pass
 
     def __init__(self,url,result, parent=None):
         super(input_manager, self).__init__(parent)
@@ -111,34 +107,15 @@ class input_manager(QMainWindow):
 
             self.rowcount += 1
 
-
-
-        # for inp in self.buttons:
-        #     header = getheader(inp)
-        #
-        #     itemtype = QTableWidgetItem(header["innerHTML"])
-        #     itemid = QTableWidgetItem(header["id"])
-        #     itemname = QTableWidgetItem(header["name"])
-        #
-        #     itemtype.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
-        #     itemid.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
-        #     itemname.setFlags(itemtype.flags() & ~PyQt5.QtCore.Qt.ItemIsEditable & ~PyQt5.QtCore.Qt.TextEditable)
-        #
-        #     self.tblForm.setItem(self.rowcount, 0, itemtype)
-        #     self.tblForm.setItem(self.rowcount, 1, itemid)
-        #     self.tblForm.setItem(self.rowcount, 2, itemname)
-        #     self.tblForm.setItem(self.rowcount, 3, QTableWidgetItem(header["value"]))
-        #     input_button = QPushButton("input")
-        #     input_button.clicked.connect(partial(self.on_click, self.rowcount))
-        #     self.tblForm.setCellWidget(self.rowcount, 4, input_button)
-        #
-        #     self.rowcount += 1
-
         self.tblForm.cellChanged.connect(self.cellChanged)
         layout = QVBoxLayout()
         self.browser_shower = QTextEdit(str(result))
+        self.execute_button = QPushButton("Execute")
+
+        self.execute_button.clicked.connect(self.executeAllClick)
         layout.addWidget(self.browser_shower)
         layout.addWidget(self.tblForm)
+        layout.addWidget(self.execute_button)
 
         central = QWidget()
         central.setLayout(layout)

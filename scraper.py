@@ -58,6 +58,7 @@ def getheader(htmldata):
     header["value"] = htmldata.get("value")
     header["name"] = htmldata.get("name")
     header["innerHTML"] = htmldata.text
+    header["tag"] = htmldata.name
     return header
 
 listofinputed= []
@@ -84,6 +85,41 @@ def dive(url,listofinputed):
             # classname = ".".join(getheader(inputed)["class"])
             input_inputed = browsers.find_element_by_name(inputed["name"])
         input_inputed.send_keys(inputed["value"])
+    return browsers
+
+def dive_plus(url,listofinputed):
+    browsers = get_browser()
+    if browsers==None:
+        browsers = webdriver.Firefox()
+    browsers.get(url)
+
+    for inputed in listofinputed:
+
+        if inputed["value"]=="{button.click}":
+            print(inputed)
+            if inputed["id"] != None:
+                print("using id")
+                submit = browsers.find_element_by_id(inputed["id"])
+            elif inputed["class"] != None:
+                classname = ".".join(inputed["class"])
+                print("using css",classname)
+                if inputed["tag"] == "input":
+                    print("pake input")
+                    submit = browsers.find_element_by_css_selector('input.' + classname)
+                else:
+                    print("pake button")
+                    submit = browsers.find_element_by_css_selector('button.' + classname)
+                    print("bbb")
+            submit.click()
+
+        elif inputed["id"] != None:
+            input_inputed = browsers.find_element_by_id(inputed["id"])
+            input_inputed.send_keys(inputed["value"])
+        else:
+            input_inputed = browsers.find_element_by_name(inputed["name"])
+            input_inputed.send_keys(inputed["value"])
+
+
     return browsers
 
 def processform(formdata):
