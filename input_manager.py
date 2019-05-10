@@ -59,6 +59,32 @@ class input_manager(QMainWindow):
         except TimeoutException:
             print("Timeout")
 
+    def save_click(self):
+        import pickle
+        with open('saved.pkl', 'wb') as f:
+            pickle.dump(self.listofinputed, f)
+
+    def setValueByInput(self,inputed):
+        i = 0
+        for input in self.inputs:
+            import scraper
+            head = scraper.getheader(input)
+            if head["id"]==inputed["id"] and head["class"] == inputed["class"] and head["tag"] == inputed["tag"] and head["name"] == inputed["name"]:
+                # print(head)
+                self.tblForm.item(i, 3).setText(inputed["value"])
+            i+=1
+            # self.tblForm.item(row, col).text()
+            # print(i["value"])
+
+    def load_click(self):
+        import pickle
+        with open('saved.pkl', 'rb') as f:
+            self.listofinputed = pickle.load(f)
+        for inputed in self.listofinputed:
+            if inputed["value"] != "{button.click}":
+                self.setValueByInput(inputed)
+
+
 
 
     def __init__(self,url,result, parent=None):
@@ -71,8 +97,6 @@ class input_manager(QMainWindow):
         from scraper import getheader, findallinput,findallbutton,findalltextarea
 
         self.inputs = findallinput(result)+findallbutton(result)+findalltextarea(result)
-        # self.buttons = findallbutton(result)
-
 
         self.tblForm.setRowCount(len(self.inputs))
 
@@ -111,16 +135,23 @@ class input_manager(QMainWindow):
         layout = QVBoxLayout()
         self.browser_shower = QTextEdit(str(result))
         self.execute_button = QPushButton("Execute")
+        self.save_button = QPushButton("Save")
+        self.load_button = QPushButton("Load")
 
         self.execute_button.clicked.connect(self.executeAllClick)
+        self.save_button.clicked.connect(self.save_click)
+        self.load_button.clicked.connect(self.load_click)
+
         layout.addWidget(self.browser_shower)
         layout.addWidget(self.tblForm)
         layout.addWidget(self.execute_button)
+        layout.addWidget(self.save_button)
+        layout.addWidget(self.load_button)
 
         central = QWidget()
         central.setLayout(layout)
         self.setCentralWidget(central)
-        self.resize(600, 400)
+        self.resize(600, 500)
         self.setWindowTitle("Input Manager")
         self.statusBar().showMessage("Active")
 
