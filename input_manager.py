@@ -84,10 +84,7 @@ class input_manager(QMainWindow):
             if inputed["value"] != "{button.click}":
                 self.setValueByInput(inputed)
 
-
-
-
-    def __init__(self,url,result, parent=None):
+    def __init__(self, url,result, parent=None):
         super(input_manager, self).__init__(parent)
         self.url = url
         self.listofinputed= []
@@ -102,7 +99,7 @@ class input_manager(QMainWindow):
 
         self.tblForm.setColumnCount(6)
 
-        header = ("Type", "Id", "Name", "Value", "Button","Inner")
+        header = ("Type", "Id", "Name", "Value", "Action","Inner")
         self.tblForm.setHorizontalHeaderLabels(header)
 
         self.rowcount = 0
@@ -125,7 +122,7 @@ class input_manager(QMainWindow):
             self.tblForm.setItem(self.rowcount, 2, itemname)
             self.tblForm.setItem(self.rowcount, 3, QTableWidgetItem(header["value"]))
             self.tblForm.setItem(self.rowcount, 4, iteminner)
-            input_button = QPushButton("input")
+            input_button = QPushButton("Click")
             input_button.clicked.connect(partial(self.on_click, self.rowcount))
             self.tblForm.setCellWidget(self.rowcount, 4, input_button)
 
@@ -154,7 +151,6 @@ class input_manager(QMainWindow):
         self.resize(600, 500)
         self.setWindowTitle("Input Manager")
         self.statusBar().showMessage("Active")
-
 
 if __name__=="__main__":
     main.main()

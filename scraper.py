@@ -87,6 +87,28 @@ def dive(url,listofinputed):
         input_inputed.send_keys(inputed["value"])
     return browsers
 
+def find_text(text):
+    browsers = get_browser()
+    try:
+        res = browsers.find_elements_by_xpath("//*[contains(text(), '"+text+"')]")
+        if len(res)==0 : return False
+        return True
+    except:
+        return False
+
+def find_element(element):
+    browsers = get_browser()
+    try:
+        res_id = browsers.find_elements_by_xpath("//*[@id='"+element+"']")
+        res_class = browsers.find_elements_by_xpath("//*[contains(@class,'"+element+"')]")
+        print(res_id)
+        print(res_class)
+        if len(res_id)==0 and len(res_class) == 0 : return False
+        return True
+    except:
+        return False
+
+
 def dive_plus(url,listofinputed):
     browsers = get_browser()
     if browsers==None:
@@ -94,7 +116,6 @@ def dive_plus(url,listofinputed):
     browsers.get(url)
 
     for inputed in listofinputed:
-
         if inputed["value"]=="{button.click}":
             print(inputed)
             if inputed["id"] != None:
