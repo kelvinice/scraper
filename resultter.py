@@ -11,7 +11,7 @@ class Result_displayer(QMainWindow):
         layout = QVBoxLayout()
         urlBeforeLbl = QLabel("Url Before : "+url)
         all_condition = True
-
+        print("a")
         self.tblForm = QTableWidget()
 
         self.tblForm.setRowCount(3)
@@ -49,7 +49,6 @@ class Result_displayer(QMainWindow):
         layout.addWidget(urlBeforeLbl)
         layout.addWidget(self.tblForm)
         layout.addWidget(QLabel("Tested with result : "+self.condition_message(all_condition)))
-
 
 
         central = QWidget()

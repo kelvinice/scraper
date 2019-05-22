@@ -8,6 +8,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+from resultter import Result_displayer
 
 class input_manager(QMainWindow):
     def cellChanged(self,row, col):
@@ -38,6 +39,16 @@ class input_manager(QMainWindow):
 
     def executeAllClick(self):
         print("executed")
+
+        if self.exUrlLbl.text() != "" :
+            self.expected["url_after"] = self.exUrlLbl.text()
+        if self.exTextLbl.text() != "":
+            self.expected["text_after"] = self.exTextLbl.text()
+        if self.exElementLbl.text() != "":
+            self.expected["element_after"] = self.exElementLbl.text()
+
+        print(self.expected)
+
         import scraper
         scraper.browser = scraper.dive_plus(self.url, self.listofinputed)
         wait = WebDriverWait(scraper.browser, 5)
@@ -51,13 +62,22 @@ class input_manager(QMainWindow):
             for cookie in cookies:
                 print(cookie['name'], " : ", cookie['value'])
                 scraper.session.cookies.set(cookie['name'], cookie['value'])
-            url2 = "https://industry.socs.binus.ac.id/learning-plan/"
-            loginResult = scraper.scrape(url2)
-            self.browser_shower.setText(str(loginResult))
-            soup = BeautifulSoup(loginResult, features='html.parser')
+
+            # loginResult = scraper.scrape(self.expected["url_after"])
+            # self.browser_shower.setText(str(loginResult))
 
         except TimeoutException:
             print("Timeout")
+        finally:
+            result = {
+                "url_after": scraper.browser.current_url,
+                "text_found": scraper.find_text(self.expected["text_after"]),
+                "element_found": scraper.find_element(self.expected["element_after"])
+            }
+            result_window = Result_displayer(url=self.url, expected=self.expected, result=result, parent=None)
+            result_window.show()
+            scraper.browser.close()
+
 
     def save_click(self):
         import pickle
@@ -90,6 +110,10 @@ class input_manager(QMainWindow):
         self.listofinputed= []
         self.inputs = result
         self.tblForm = QTableWidget()
+        self.expected = {}
+        self.expected["url_after"] = None
+        self.expected["text_after"] = None
+        self.expected["element_after"] = None
 
         from scraper import getheader, findallinput,findallbutton,findalltextarea
 
@@ -144,6 +168,34 @@ class input_manager(QMainWindow):
         layout.addWidget(self.execute_button)
         layout.addWidget(self.save_button)
         layout.addWidget(self.load_button)
+
+        self.exUrlLbl = QLineEdit()
+        gridAction1 = QGridLayout()
+        gridAction1.setColumnStretch(1, 2)
+        gridAction1.addWidget(QLabel("Url Expected"))
+        gridAction1.addWidget(self.exUrlLbl)
+        leftright1 = QWidget()
+        leftright1.setLayout(gridAction1)
+        layout.addWidget(leftright1)
+
+
+        self.exTextLbl = QLineEdit()
+        gridAction2 = QGridLayout()
+        gridAction2.setColumnStretch(1, 2)
+        gridAction2.addWidget(QLabel("Text Expected"))
+        gridAction2.addWidget(self.exTextLbl)
+        leftright2 = QWidget()
+        leftright2.setLayout(gridAction2)
+        layout.addWidget(leftright2)
+
+        self.exElementLbl = QLineEdit()
+        gridAction3 = QGridLayout()
+        gridAction3.setColumnStretch(1, 2)
+        gridAction3.addWidget(QLabel("Element Expected"))
+        gridAction3.addWidget(self.exElementLbl)
+        leftright3 = QWidget()
+        leftright3.setLayout(gridAction3)
+        layout.addWidget(leftright3)
 
         central = QWidget()
         central.setLayout(layout)
