@@ -76,7 +76,7 @@ class input_manager(QMainWindow):
             }
             result_window = Result_displayer(url=self.url, expected=self.expected, result=result, parent=None)
             result_window.show()
-            scraper.browser.close()
+            # scraper.browser.close()
 
 
     def save_click(self):

@@ -51,6 +51,7 @@ class Automator():
                          "class": head["class"],
                          "name": head["name"], "value": rule["value"]})
 
+
     def define_rule(self):
         self.rules.append({
             "name": "username",

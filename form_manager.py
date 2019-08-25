@@ -12,7 +12,7 @@ class form_manager(QMainWindow):
         if(self.comboAuto.currentText() == "Manual"):
             dialog = input_manager.input_manager(url=self.url, result=self.forms[int(args)], parent=self)
             dialog.show()
-        elif(self.comboAuto.currentText() == "Auto Blank"):
+        elif(self.comboAuto.currentText() == "Automated"):
             automator.Automator(url=self.url, result=self.forms[int(args)])
 
 
@@ -52,7 +52,7 @@ class form_manager(QMainWindow):
         # TODO refactor
         self.comboAuto = QComboBox()
         self.comboAuto.addItem("Manual")
-        self.comboAuto.addItem("Auto Blank")
+        self.comboAuto.addItem("Automated")
 
         gridAction = QGridLayout()
         gridAction.setColumnStretch(1, 2)
