@@ -1,14 +1,13 @@
-import sys
-from PyQt5.QtWidgets import *
-import main
-import PyQt5.QtCore
 from functools import partial
-from bs4 import BeautifulSoup
-import os
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
+
+import PyQt5.QtCore
+from PyQt5.QtWidgets import *
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+
+import main
 from resultter import Result_displayer
+
 
 class input_manager(QMainWindow):
     def cellChanged(self,row, col):

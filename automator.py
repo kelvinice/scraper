@@ -1,10 +1,10 @@
-import main
-from scraper import getheader, findallinput,findallbutton,findalltextarea
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
-from bs4 import BeautifulSoup
+from selenium.webdriver.support.ui import WebDriverWait
+
+import main
 from resultter import Result_displayer
+from scraper import getheader, findallinput, findallbutton, findalltextarea
+
 
 class Automator():
     def execute(self):
