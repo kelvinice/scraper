@@ -1,7 +1,6 @@
 import sys
 from PyQt5.QtWidgets import *
 import form_manager
-from selenium import webdriver
 
 
 class InputURLWindow(QMainWindow):
