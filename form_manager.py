@@ -10,10 +10,10 @@ import automator
 class form_manager(PyQt5.QtWidgets.QMainWindow):
     def on_click(self,args=0):
 
-        if(self.comboAuto.currentText() == "Manual"):
+        if self.comboAuto.currentText() == "Manual":
             dialog = input_manager.input_manager(url=self.url, result=self.forms[int(args)], parent=self)
             dialog.show()
-        elif(self.comboAuto.currentText() == "Automated"):
+        elif self.comboAuto.currentText() == "Automated":
             automator.Automator(url=self.url, result=self.forms[int(args)])
 
 
