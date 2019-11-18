@@ -32,7 +32,7 @@ class InputURLWindow(QMainWindow):
         self.btnSubmit.clicked.connect(self.on_click)
 
         self.resize(400, 150)
-        self.setWindowTitle("Scaper")
+        self.setWindowTitle("ScRYKEPy")
         self.statusBar().showMessage("Scraper Application v0.2")
 
 
