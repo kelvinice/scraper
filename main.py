@@ -15,8 +15,6 @@ class InputURLWindow(QMainWindow):
 
     def __init__(self, parent=None):
         super(InputURLWindow, self).__init__(parent)
-        browsers = webdriver.Firefox()
-        browsers.get("https://www.facebook.com/")
 
         layout = QVBoxLayout()
         self.txtUrl = QLineEdit()
