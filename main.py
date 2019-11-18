@@ -34,7 +34,7 @@ class InputURLWindow(QMainWindow):
 
         self.resize(400, 150)
         self.setWindowTitle("Scaper")
-        self.statusBar().showMessage("Scraper Application v0.1")
+        self.statusBar().showMessage("Scraper Application v0.2")
 
 
 def main():
